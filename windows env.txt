@@ -1,0 +1,11 @@
+cab_xxxx files found in WINDOWS\TEMP folder
+
+ans : 
+
+we had the same problem. Deleting the cab_xxxx files only resulted in regeneration every 30min.
+Checking <windows>\Logs\CBS folder I found lots of .log and (some) .cab files
+It seems, that windows wasn't able to zip (makecab.exe) one of the .log files.
+Solution was:
+in <windows>\Logs\CBS folder delete the oldest .log file (you can also delete them all)
+in <windows>\temp folder delete every cab_xxxx
+in the following regeneration process, the remaining (CBS) logs where zipped correctly, and <windows>\temp was left clean

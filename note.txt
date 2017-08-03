@@ -1,0 +1,191 @@
+================================================= openswan config ==============================================================
+site to site VPN
+
+
+#sudo apt-get install openswan lsof
+
+#sudo vi /etc/sysctl.conf
+net.ipv4.ip_forward = 1
+net.ipv4.conf.default.rp_filter = 0
+net.ipv4.conf.all.send_redirects = 0
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.default.send_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+
+# sysctl -p
+
+兩端都使用openswan搭建ipsec VPN。
+兩台的配置文件/etc/ipsec.conf 與/etc/ipsec.secrt完全相同就行了。
+
+
+#sudo vi /etc/ipsec.conf
+
+version 2.0
+
+config setup
+	plutodebug=all
+	plutostderrlog=/var/log/pluto.log
+	virtual_private=%v4:172.16.0.0/12,%v4:192.168.0.0/16,%v4:10.0.0.0/8,%v4:!10.1.1.0/24
+        protostack=netkey
+        nat_traversal=yes
+        oe=off
+
+conn vpn
+        type=tunnel
+        ike=3des-md5
+        authby=secret
+        left=172.16.1.1
+        leftsubnet=192.168.12.0/24
+        leftnexthop=172.16.1.3
+        right=172.16.1.2
+        rightsubnet=192.168.1.0/24
+        rightnexthop=172.16.1.3
+        auto=start
+
+
+#sudo vi /etc/ipsec.secrets
+%any %any : PSK "vpn12345"
+
+
+
+安裝rng-tools
+#sudo apt-get install rng-tools
+
+
+#service ipsec restart  
+#ipsec verify    
+#/etc/init.d/ipsec restart
+#ipsec auto --status
+
+
+======================================================== linux config ==========================================
+== linux description ===
+vi /set/issue
+vi /etc/issue.net
+vi /etc/lsb-release
+
+vi /etc/update-motd.d/10-help-text
+
+
+== linux network timeout ===
+Edit the file /etc/dhcp/dhclient.conf to set timeout to a sane value, like
+
+
+A start job is running for Raise network interfaces : 
+sudo vim /etc/systemd/system/network-online.targets.wants/networking.service
+TimeoutStartSec=30sec
+
+=================================================== linux command =================================================
+smbpasswd -a xxx
+
+
+route add -net 192.168.100.0 netmask 255.255.255.0 gw 192.168.100.254 dev eth0
+
+
+指令組合後即可批次徹底移除這些殘留套件。
+
+sudo apt-get purge `dpkg -l | grep ^rc | awk '{ print $2 }'`
+=================================================== linux node.js =================================================
+node -p process.env.ENCLOSEJS_KEY
+
+curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+
+=================================================== linux golang =================================================
+apt-get install golang-go
+
+
+================================================= win command ============================================
+
+netstat -an
+
+
+C:\>  netstat -nao |find "0.0.0.0:80"
+
+C:\>  tasklist /fi "pid eq 4116"
+
+
+nping.exe --arp --arp-type rarp-request --arp-target-mac 00-18-23-01-32-61 --arp-target-ip 0.0.0.0 --arp-sender-mac 00-e0-4c-68-0d-ba --arp-sender-ip 192.168.1.200 192.168.1.255
+
+=========================================== git push/clone/pull 不用輸入密碼 =============================
+
+先在client產生key
+# ssh-keygen -t rsa
+Enter
+Enter
+Enter
+key產生在 Home/.ssh/
+
+在server端產生 ~/.ssh/ 資料夾
+#mkdir ~/.ssh
+
+將剛剛在client端產生的public key複製到server ~/.ssh/authorized_keys
+# scp id_rsa.pub bill.c.li@192.168.144.31:~/.sh/authorized_keys
+
+
+
+================================================== 頻寬測試 ==========================================
+psping
+
+TCP頻寬測試
+
+server: psping -s 192.168.3.116:8080
+
+client: psping -b -l 8192 -n 100000 -h 10 10 192.168.3.116:8080
+
+client: psping -b -r -l 8192 -n 100000 -h 10 10 192.168.3.116:8080
+
+
+server : iperf –s
+client : iperf –c 192.168.1.200–w 100M –t 120 –i 1
+
+
+=================================================== sublime ==================================================
+Ctrl + `        顯示console
+Ctrl+Shift+P    package control
+
+=================================================== git 指令 ==================================================
+git clone +git連結網址
+#電腦裡完全沒有這個project的code
+#從無到有把整份prject抓下來
+
+git checkout
+# 復原已被更動的檔案
+
+git reset --hard HEAD 
+# 還原到最前面
+
+git pull
+#直接抓最新版本中有被更新的部分
+
+git checkout 某一個commit的ID
+#把某一個版本(不是最新的master branch版本)的code抓下來
+
+git pull
+#把最新的版本merge到你的電腦中現在在處理的code
+
+git add .
+#把你新增了的所有、檔案更新
+
+git commit -a -m '此版本的描述'
+#加入描述，把你的code給commit出去
+
+git push
+#把修改過後的code更新到github上面
+
+git branch
+#看現在總共有那些branch
+
+git branch 
+#新建立一個branch
+
+git checkout 
+#切換到某個branch
+
+git merge master
+#把旁支branch的內容merge到master branch
+
+git remote
+#看遠端Respository有那些版本
+
